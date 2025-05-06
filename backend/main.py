@@ -9,13 +9,19 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://teplo-lac.vercel.app"
-    ],
+    allow_origins=["https://teplo-lac.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Новый корневой маршрут:
+@app.get("/")
+async def root():
+    return {"message": "Сервер работает. Используйте POST /analyze/ для анализа изображений."}
+
+# Остальной ваш код (generate_report, /analyze/) без изменений:
+# ...
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 from fpdf.fonts import FontFace
