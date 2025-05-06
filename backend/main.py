@@ -27,7 +27,7 @@ def generate_report(image_data, output_path):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=14)
-    pdf.cell(200, 10, txt="Teplo PP — Отчёт анализа упаковки", ln=1)
+    pdf.cell(200, 10, txt="Teplo PP - Отчет анализа упаковки", ln=1)
     pdf.image(temp_image_path, x=10, y=30, w=180)
     pdf.ln(100)
     pdf.set_font("Arial", size=12)
@@ -38,6 +38,7 @@ def generate_report(image_data, output_path):
     pdf.multi_cell(0, 10, txt="- Добавьте акцентные элементы (иконки, метки) в правую часть.")
     pdf.output(output_path)
     os.remove(temp_image_path)
+
 
 @app.post("/analyze/")
 async def analyze(file: UploadFile = File(...)):
