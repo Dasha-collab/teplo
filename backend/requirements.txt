@@ -1,5 +1,5 @@
 fastapi
 uvicorn
 pillow
-fpdf
+fpdf2
 python-multipart

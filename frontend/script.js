@@ -5,7 +5,7 @@ function analyze() {
   const formData = new FormData();
   formData.append("file", file);
 
-  fetch("https://teplopp-backend.onrender.com/analyze/", {
+  fetch("https://teplo.onrender.com/analyze/", {
     method: "POST",
     body: formData,
   })
