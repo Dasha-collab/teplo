@@ -9,12 +9,13 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://teplo-lac.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 def generate_report(image_data, output_path):
     image = Image.open(io.BytesIO(image_data)).convert("RGB")
     width, height = image.size
