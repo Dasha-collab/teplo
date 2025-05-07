@@ -8,6 +8,7 @@ from pathlib import Path
 
 app = FastAPI()
 
+# Настройки CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -58,7 +59,15 @@ async def analyze(file: UploadFile = File(...)):
             filename="packaging_analysis.pdf"
         )
     except Exception as e:
-        raise HTTPException(500, detail=f"Ошибка обработки: {
+        raise HTTPException(500, detail=f"Ошибка обработки: {str(e)}")
+    finally:
+        for f in [temp_img, temp_pdf]:
+            if f and os.path.exists(f):
+                try:
+                    os.remove(f)
+                except:
+                    pass
+
+@app.get("/")
 async def health_check():
-    """Проверка работоспособности сервиса"""
-    return {"status": "OK"}
+    return {"status": "OK", "message": "Сервис анализа упаковки работает"}
