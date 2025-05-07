@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
-# Установка системных зависимостей
+#!/bin/bash
+# Установка системных шрифтов
 sudo apt-get update
 sudo apt-get install -y fonts-dejavu
 
-# Установка Python-зависимостей
+# Установка зависимостей Python
 pip install -r requirements.txt
