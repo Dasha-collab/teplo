@@ -3,4 +3,3 @@ uvicorn==0.22.0
 pillow==10.0.0
 fpdf2==2.7.4
 python-multipart==0.0.6
-fonts-dejavu==2.37  # Для поддержки шрифта DejaVu в Linux
