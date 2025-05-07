@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from PIL import Image, ImageDraw
 import io, os, uuid
 from fpdf import FPDF
@@ -8,109 +8,78 @@ from pathlib import Path
 
 app = FastAPI()
 
-# Настройки CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Для продакшена укажите конкретные домены
-    allow_methods=["POST"],
+    allow_origins=["*"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 @app.get("/")
 async def health_check():
-    return {"status": "OK", "message": "Сервис анализа упаковки работает"}
+    return {"status": "working", "message": "Teplo PP Analysis Service"}
 
 def generate_report(image_data, output_path):
     try:
-        # Проверка размера изображения (не более 5MB)
-        if len(image_data) > 5 * 1024 * 1024:
-            raise ValueError("Изображение слишком большое (максимум 5MB)")
+        # Проверка и загрузка изображения
+        image = Image.open(io.BytesIO(image_data))
+        if image.format not in ['JPEG', 'PNG']:
+            raise ValueError("Only JPEG/PNG images supported")
+        
+        # Конвертация в RGB если нужно
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
 
-        # Проверка и открытие изображения
-        try:
-            image = Image.open(io.BytesIO(image_data))
-            if image.format not in ['JPEG', 'PNG']:
-                raise ValueError("Поддерживаются только JPG и PNG изображения")
-            image = image.convert("RGB")
-        except Exception as e:
-            raise ValueError(f"Невозможно обработать изображение: {str(e)}")
-
-        # Отрисовка прямоугольника
-        width, height = image.size
-        draw = ImageDraw.Draw(image)
-        draw.rectangle(
-            [width*0.25, height*0.25, width*0.75, height*0.75],
-            outline="red",
-            width=5
-        )
-
-        # Сохранение временного файла
-        temp_image_path = f"{uuid.uuid4().hex}_temp.jpg"
-        image.save(temp_image_path, quality=85)  # Качество 85%
-
-        # Создание PDF
-        pdf = FPDF()
+        # Создание временного файла изображения
+        temp_img_path = f"/tmp/{uuid.uuid4().hex}.jpg"
+        image.save(temp_img_path, quality=85)
+        
+        # Инициализация PDF
+        pdf = FPDF(unit="mm", format="A4")
         pdf.add_page()
         
-        # Шрифт (пробуем оба варианта)
+        # Настройка шрифта (пробуем несколько вариантов)
         try:
             font_path = Path(__file__).parent / "fonts" / "DejaVuSans.ttf"
             if font_path.exists():
-                pdf.add_font("DejaVuSans", "", str(font_path), uni=True)
-                pdf.set_font("DejaVuSans", size=14)
+                pdf.add_font("DejaVu", "", str(font_path), uni=True)
+                pdf.set_font("DejaVu", size=12)
             else:
-                pdf.set_font("Arial", size=14)
+                pdf.set_font("Arial", size=12)
         except:
-            pdf.set_font("Arial", size=14)
+            pdf.set_font("Helvetica", size=12)
         
-        # Заголовок
-        pdf.cell(200, 10, txt="Teplo PP - Анализ упаковки", ln=True)
+        # Добавление заголовка
+        pdf.cell(200, 10, txt="Teplo PP - Packaging Analysis", ln=1, align='C')
         
-        # Изображение
-        pdf.image(temp_image_path, x=10, y=30, w=180)
+        # Добавление изображения (макс. ширина 180mm)
+        pdf.image(temp_img_path, x=10, y=30, w=180)
         
-        # Рекомендации
-        pdf.set_font(size=12)
-        pdf.ln(100)
-        pdf.multi_cell(0, 10, txt="Рекомендации:")
-        pdf.multi_cell(0, 10, txt="- Центральная зона выделена красным")
+        # Добавление рекомендаций
+        pdf.set_font(size=10)
+        pdf.ln(120)
+        pdf.multi_cell(0, 8, txt="Recommendations:")
+        pdf.multi_cell(0, 8, txt="- Product is outside the focus area")
         
+        # Сохранение PDF
         pdf.output(output_path)
-        os.remove(temp_image_path)
-
+        os.remove(temp_img_path)
+        
     except Exception as e:
-        print(f"[ОШИБКА] При генерации отчета: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Ошибка при создании отчета: {str(e)}"
-        )
+        print(f"PDF Generation Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
 
 @app.post("/analyze/")
 async def analyze(file: UploadFile = File(...)):
-    # Проверка типа файла
     if not file.content_type.startswith("image/"):
-        return JSONResponse(
-            status_code=400,
-            content={"error": "Поддерживаются только изображения (JPG/PNG)"}
-        )
-
-    output_pdf = f"report_{uuid.uuid4().hex}.pdf"
+        raise HTTPException(status_code=400, detail="Only image files are accepted")
+    
+    output_pdf = f"/tmp/report_{uuid.uuid4().hex}.pdf"
     
     try:
         contents = await file.read()
         generate_report(contents, output_pdf)
-        return FileResponse(
-            output_pdf,
-            media_type="application/pdf",
-            filename="teplo_analysis.pdf"
-        )
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"Внутренняя ошибка сервера: {str(e)}"}
-        )
+        return FileResponse(output_pdf, media_type="application/pdf", filename="packaging_analysis.pdf")
     finally:
         if os.path.exists(output_pdf):
             os.remove(output_pdf)
