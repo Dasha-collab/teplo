@@ -185,21 +185,6 @@ button:disabled {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  body {
-    padding: 1rem;
-  }
-  
-  .container {
-    padding: 1.5rem;
-  }
-  
-  #upload-area {
-    padding: 1.5rem;
-  }
-}
-
 /* Drag and Drop Effects */
 #upload-area::before {
   content: '';
@@ -215,4 +200,19 @@ button:disabled {
 
 #upload-area.highlight::before {
   opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .container {
+    padding: 1.5rem;
+  }
+  
+  #upload-area {
+    padding: 1.5rem;
+  }
 }
