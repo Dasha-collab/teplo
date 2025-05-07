@@ -1,22 +1,22 @@
 body {
-  font-family: sans-serif;
-  padding: 40px;
-  background-color: #f9f9f9;
-  text-align: center;
-}
-
-h1 {
-  font-size: 24px;
-  color: #333;
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 40px;
 }
 
 button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-#result {
-  margin-top: 20px;
-  color: red;
+button:hover {
+    background-color: #f0f0f0;
+}
+
+a#download {
+    display: inline-block;
+    margin-top: 20px;
+    color: blue;
+    text-decoration: underline;
 }
