@@ -1,7 +1,27 @@
 function analyze() {
   const fileInput = document.getElementById('upload');
   const file = fileInput.files[0];
-  if (!file) return alert("Выберите файл");
+  
+  if (!file) {
+    alert("Пожалуйста, выберите файл изображения (JPEG/PNG)");
+    return;
+  }
+
+  // Проверка типа файла
+  if (!file.type.match('image.*')) {
+    alert("Только изображения (JPEG/PNG) поддерживаются");
+    return;
+  }
+
+  const resultDiv = document.getElementById("result");
+  const downloadLink = document.getElementById("download");
+  
+  // Очистка предыдущих результатов
+  resultDiv.innerText = "";
+  downloadLink.style.display = "none";
+
+  // Показываем индикатор загрузки
+  resultDiv.innerText = "Идёт анализ...";
 
   const formData = new FormData();
   formData.append("file", file);
@@ -10,18 +30,22 @@ function analyze() {
     method: "POST",
     body: formData,
   })
-  .then((res) => {
-    if (res.ok) return res.blob();
-    return res.json().then(err => { throw new Error(err.detail || "Ошибка сервера"); });
+  .then(async (response) => {
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Ошибка сервера");
+    }
+    return response.blob();
   })
   .then((blob) => {
     const url = window.URL.createObjectURL(blob);
-    const link = document.getElementById("download");
-    link.href = url;
-    link.download = "report.pdf";
-    link.style.display = "inline-block";
+    downloadLink.href = url;
+    downloadLink.download = "teplo_report.pdf";
+    downloadLink.style.display = "inline-block";
+    resultDiv.innerText = "Анализ завершён!";
   })
-  .catch((err) => {
-    document.getElementById("result").innerText = "Ошибка: " + err.message;
+  .catch((error) => {
+    console.error("Ошибка:", error);
+    resultDiv.innerText = "Ошибка: " + error.message;
   });
 }
