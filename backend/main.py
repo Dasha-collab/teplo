@@ -15,44 +15,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def safe_text(pdf, text, max_width=180):
-    """Обеспечивает безопасное добавление текста с поддержкой Unicode"""
-    try:
-        if pdf.get_string_width(text) > max_width:
-            text = text[:int(max_width/5)] + "..."
-        pdf.cell(0, 10, txt=text, ln=1, align="C")
-    except:
-        pdf.cell(0, 10, txt="Teplo Report", ln=1, align="C")
-
 def generate_pdf(image_path, output_pdf):
     pdf = FPDF(unit="mm", format="A4")
     
-    # Установка Unicode-шрифта (3 уровня резервирования)
-    font_paths = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux
-        str(Path(__file__).parent / "fonts" / "DejaVuSans.ttf",  # Локальный
-        str(Path(__file__).parent / "fonts" / "arial-unicode-ms.ttf"  # Windows
-    ]
+    # Установка Unicode-шрифта
+    try:
+        font_path = Path(__file__).parent / "fonts" / "DejaVuSans.ttf"
+        pdf.add_font("DejaVu", "", str(font_path), uni=True)
+        pdf.set_font("DejaVu", size=12)
+    except:
+        pdf.set_font("Arial", size=12)
     
-    for font_path in font_paths:
-        try:
-            pdf.add_font("UnicodeFont", "", font_path, uni=True)
-            pdf.set_font("UnicodeFont", size=12)
-            break
-        except:
-            continue
-    else:
-        raise ValueError("Не найден подходящий Unicode-шрифт")
-
     pdf.add_page()
-    
-    # Добавление изображения
     pdf.image(image_path, x=15, y=20, w=180)
-    
-    # Добавление текста
-    safe_text(pdf, "Teplo PP — анализ упаковки")
-    safe_text(pdf, "Рекомендации по зоне восприятия")
-    
+    pdf.cell(0, 10, txt="Teplo PP - Анализ упаковки", ln=1, align="C")
+    pdf.multi_cell(0, 10, txt="Рекомендации по зоне восприятия:")
     pdf.output(output_pdf)
 
 @app.post("/analyze/")
@@ -77,15 +54,15 @@ async def analyze(file: UploadFile = File(...)):
             media_type="application/pdf",
             filename="teplo_analysis.pdf"
         )
-        
     except Exception as e:
-        raise HTTPException(500, detail=f"Ошибка: {str(e)}")
-        
+        raise HTTPException(500, detail=f"Ошибка обработки: {str(e)}")
     finally:
         for f in [temp_img, temp_pdf]:
             if f and os.path.exists(f):
-                try: os.remove(f)
-                except: pass
+                try: 
+                    os.remove(f)
+                except:
+                    pass
 
 @app.get("/")
 async def health_check():
