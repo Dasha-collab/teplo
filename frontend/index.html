@@ -5,31 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teplo PP — анализ упаковки</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    #upload-area {
-      border: 2px dashed #ccc;
-      padding: 20px;
-      margin: 20px 0;
-      text-align: center;
-      cursor: pointer;
-    }
-    #upload-area:hover {
-      border-color: #999;
-    }
-    #preview {
-      max-width: 300px;
-      max-height: 300px;
-      margin: 15px auto;
-      display: none;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
     <h1>Teplo PP — анализ упаковки</h1>
     <p>Загрузите фото упаковки для анализа зоны восприятия</p>
     
-    <div id="upload-area" onclick="document.getElementById('upload').click()">
+    <div id="upload-area">
       <p>Перетащите изображение сюда или кликните для выбора</p>
       <input type="file" id="upload" accept="image/*" style="display:none">
       <img id="preview" alt="Предпросмотр изображения">
@@ -47,6 +29,7 @@
     </a>
   </div>
 
+  <script src="script.js"></script>
   <script>
     // Обработка выбора файла с предпросмотром
     document.getElementById('upload').addEventListener('change', function(e) {
@@ -65,50 +48,6 @@
       
       reader.readAsDataURL(file);
     });
-
-    // Функция анализа (как в предыдущем ответе)
-    function analyze() {
-      const fileInput = document.getElementById('upload');
-      const file = fileInput.files[0];
-      
-      if (!file) {
-        alert("Пожалуйста, выберите файл изображения (JPEG/PNG)");
-        return;
-      }
-
-      const resultDiv = document.getElementById("result");
-      const downloadLink = document.getElementById("download");
-      
-      resultDiv.innerText = "";
-      downloadLink.style.display = "none";
-      resultDiv.innerText = "Идёт анализ...";
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      fetch("https://teplo.onrender.com/analyze/", {
-        method: "POST",
-        body: formData,
-      })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || "Ошибка сервера");
-        }
-        return response.blob();
-      })
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        downloadLink.href = url;
-        downloadLink.download = "teplo_analysis_report.pdf";
-        downloadLink.style.display = "inline-flex";
-        resultDiv.innerText = "Анализ завершён!";
-      })
-      .catch((error) => {
-        console.error("Ошибка:", error);
-        resultDiv.innerText = "Ошибка: " + (error.message || "Произошла неизвестная ошибка");
-      });
-    }
   </script>
 </body>
 </html>
