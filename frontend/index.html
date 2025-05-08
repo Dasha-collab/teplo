@@ -4,38 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teplo PP - Анализ упаковки</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Teplo PP</h1>
-      <p class="subtitle">Анализ упаковки продукта</p>
-    </header>
+    <h1>Teplo PP</h1>
+    <p class="subtitle">Анализ упаковки продукта</p>
     
-    <div class="upload-container">
-      <div id="upload-area">
-        <svg class="upload-icon" viewBox="0 0 24 24">
-          <path d="M19 13a1 1 0 0 0-1 1v.38l-1.48-1.48a2.79 2.79 0 0 0-3.93 0l-.7.7-2.48-2.48a2.85 2.85 0 0 0-3.93 0L4 12.6V7a1 1 0 0 1 1-1h7a1 1 0 1 0 0-2H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-1-1zM5 20a1 1 0 0 1-1-1v-3.57l2.9-2.9a.79.79 0 0 1 1.09 0l3.17 3.17 4.3 4.3zm13-1a1 1 0 0 1-.18.53L13.8 15l.7-.7a.77.77 0 0 1 1.1 0L18 17.21zm4.71-14.71L16.71.29a1 1 0 0 0-1.41 0L12 3.59 8.71.29A1 1 0 0 0 7.29 1.71L10.59 5H7a1 1 0 1 0 0 2h10a1 1 0 0 0 0-2h-3.59l3.3-3.29a1 1 0 0 0 0-1.42z"/>
-        </svg>
-        <p class="upload-text">Перетащите сюда изображение упаковки</p>
-        <p class="upload-hint">или кликните для выбора файла</p>
-        <input type="file" id="upload" accept="image/jpeg,image/png">
-      </div>
-      <img id="preview" alt="Предпросмотр">
+    <div id="upload-area">
+      <p class="upload-text">Перетащите изображение сюда</p>
+      <p class="upload-hint">или кликните для выбора файла</p>
+      <input type="file" id="upload" accept="image/jpeg,image/png">
     </div>
+    <img id="preview" alt="Предпросмотр">
     
-    <button id="analyze-btn" class="btn-primary" disabled>
+    <button id="analyze-btn" disabled>
       <span id="btn-text">Анализировать</span>
       <span id="spinner" class="spinner"></span>
     </button>
     
     <div id="result" class="result-message"></div>
     
-    <a id="download" class="btn-download">
-      <svg class="download-icon" viewBox="0 0 24 24">
+    <a id="download" class="download-btn">
+      <svg viewBox="0 0 24 24">
         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
       </svg>
       Скачать отчёт PDF
