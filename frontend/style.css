@@ -1,50 +1,23 @@
-:root {
-  --primary: #4a6fa5;
-  --primary-dark: #3a5a8a;
-  --secondary: #ff6b6b;
-  --text: #333;
-  --light: #f8f9fa;
-  --border: #dee2e6;
-  --success: #28a745;
-  --error: #dc3545;
-  --radius: 12px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
-  color: var(--text);
-  background-color: var(--light);
+/* Добавьте эти стили для upload-area */
+#upload-area {
+  border: 2px dashed var(--border);
   padding: 2rem;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin: 1.5rem 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-.container {
-  max-width: 600px;
-  width: 100%;
-  background: white;
-  padding: 2.5rem;
+#upload-area:hover {
+  border-color: var(--primary);
+  background-color: rgba(74, 111, 165, 0.05);
+}
+
+#preview {
+  max-width: 100%;
+  max-height: 300px;
+  margin: 1rem auto;
+  display: none;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  text-align: center;
-  animation: fadeIn 0.5s ease-out;
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Остальные стили остаются без изменений */
-/* ... */
